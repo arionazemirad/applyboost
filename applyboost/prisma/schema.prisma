@@ -7,22 +7,82 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Resume {
-  id          String   @id @default(uuid())
-  userId      String
-  filename    String
-  fileUrl     String
-  textContent String
-  createdAt   DateTime @default(now())
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  resumes      Resume[]
+  jobPosts     JobPost[]
+  applications Application[]
+  optimizations Optimization[]
+
+  @@map("users")
 }
 
-model JobApplication {
-  id          String   @id @default(uuid())
+model Resume {
+  id           String         @id @default(cuid())
+  userId       String
+  filename     String
+  fileUrl      String
+  content      String         @db.Text
+  uploadedAt   DateTime       @default(now())
+  optimized    Boolean        @default(false)
+  scoreBefore  Int?
+  scoreAfter   Int?
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+  optimizations Optimization[]
+
+  @@map("resumes")
+}
+
+model JobPost {
+  id           String         @id @default(cuid())
+  userId       String
+  title        String
+  company      String?
+  content      String         @db.Text
+  keywords     String[]       @default([])
+  createdAt    DateTime       @default(now())
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+  optimizations Optimization[]
+
+  @@map("job_posts")
+}
+
+model Application {
+  id          String    @id @default(cuid())
   userId      String
-  title       String
-  company     String?
-  description String?
-  status      String   @default("saved")
-  appliedAt   DateTime?
-  createdAt   DateTime @default(now())
+  jobTitle    String
+  company     String
+  resumeId    String
+  jobPostId   String?
+  status      String    @default("Saved") // "Saved" | "Applied" | "Interview" | "Offer" | "Rejected"
+  appliedDate DateTime  @default(now())
+  notes       String?   @db.Text
+  matchScore  Int?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume      Resume    @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobPost     JobPost?  @relation(fields: [jobPostId], references: [id], onDelete: SetNull)
+
+  @@map("applications")
+}
+
+model Optimization {
+  id             String   @id @default(cuid())
+  userId         String
+  resumeId       String
+  jobPostId      String
+  scoreBefore    Int
+  scoreAfter     Int
+  addedKeywords  String[] @default([])
+  optimizedText  String   @db.Text
+  createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume         Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobPost        JobPost  @relation(fields: [jobPostId], references: [id], onDelete: Cascade)
+
+  @@map("optimizations")
 }

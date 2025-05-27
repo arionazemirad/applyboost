@@ -1,36 +1,286 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ApplyBoost.ai - Resume Optimization SaaS
 
-## Getting Started
+A comprehensive resume optimization platform that uses AI to match resumes with job postings, extract keywords, and provide optimization suggestions.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Resume Upload & Processing**: Upload PDF/DOCX resumes with automatic text extraction
+- **Job Posting Analysis**: Extract keywords and requirements from job descriptions
+- **AI-Powered Optimization**: Use OpenAI to optimize resumes for specific job postings
+- **Match Scoring**: Calculate compatibility scores between resumes and job requirements
+- **Application Tracking**: Track job applications with status management
+- **Keyword Enhancement**: Suggest and add relevant keywords to improve match scores
+- **Optimization History**: Track all optimizations with before/after comparisons
+
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Supabase Auth
+- **Storage**: Supabase Storage (for resume files)
+- **AI**: OpenAI GPT-4o-mini for keyword extraction and optimization
+- **Validation**: Zod for input validation
+- **File Processing**: pdf-parse (PDF), mammoth (DOCX)
+- **Styling**: Tailwind CSS with shadcn/ui components
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── api/                    # API routes
+│   │   ├── resume/
+│   │   │   ├── upload/         # Resume upload endpoint
+│   │   │   └── [id]/           # Individual resume operations
+│   │   ├── job/
+│   │   │   ├── upload/         # Job posting upload endpoint
+│   │   │   └── [id]/           # Individual job post operations
+│   │   ├── optimize/           # Resume optimization endpoint
+│   │   ├── applications/
+│   │   │   ├── track/          # Application tracking
+│   │   │   └── [id]/           # Individual application operations
+│   │   └── health/             # Health check endpoint
+│   ├── dashboard/              # Dashboard UI components
+│   └── globals.css
+├── lib/
+│   ├── prisma.ts              # Prisma client configuration
+│   ├── supabase.ts            # Supabase client configuration
+│   ├── auth.ts                # Authentication utilities
+│   ├── openai.ts              # OpenAI integration
+│   ├── file-processing.ts     # File upload and text extraction
+│   ├── validations.ts         # Zod validation schemas
+│   └── api-utils.ts           # API utility functions
+├── components/                 # UI components
+└── middleware.ts              # Authentication middleware
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+ and pnpm
+- PostgreSQL database
+- Supabase account
+- OpenAI API key
 
-## Learn More
+### 1. Clone and Install
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+git clone <repository-url>
+cd applyboost
+pnpm install
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Environment Variables
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create a `.env.local` file with the following variables:
 
-## Deploy on Vercel
+```bash
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/applyboost"
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Supabase Configuration
+SUPABASE_URL="https://your-project.supabase.co"
+SUPABASE_ANON_KEY="your-anon-key"
+SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# OpenAI Configuration
+OPENAI_API_KEY="sk-your-openai-api-key"
+```
+
+### 3. Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# (Optional) Seed the database
+npx prisma db seed
+```
+
+### 4. Supabase Storage Setup
+
+Create a storage bucket named `resumes` in your Supabase project:
+
+1. Go to Storage in your Supabase dashboard
+2. Create a new bucket named `resumes`
+3. Set appropriate permissions for authenticated users
+
+### 5. Run Development Server
+
+```bash
+pnpm dev
+```
+
+The application will be available at `http://localhost:3000`
+
+## 📚 API Documentation
+
+### Authentication
+
+All API endpoints require authentication using Supabase JWT tokens. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <supabase-jwt-token>
+```
+
+### Core Endpoints
+
+#### Resume Management
+
+- `POST /api/resume/upload` - Upload resume file
+- `GET /api/resume/upload` - Get user's resumes
+- `GET /api/resume/{id}` - Get resume details
+- `DELETE /api/resume/{id}` - Delete resume
+
+#### Job Posting Management
+
+- `POST /api/job/upload` - Upload job posting
+- `GET /api/job/upload` - Get user's job posts
+- `GET /api/job/{id}` - Get job post details
+- `DELETE /api/job/{id}` - Delete job post
+
+#### Resume Optimization
+
+- `POST /api/optimize` - Optimize resume for job posting
+- `GET /api/optimize` - Get optimization history
+
+#### Application Tracking
+
+- `POST /api/applications/track` - Create application
+- `GET /api/applications/track` - Get applications (with pagination)
+- `GET /api/applications/{id}` - Get application details
+- `PATCH /api/applications/{id}` - Update application
+- `DELETE /api/applications/{id}` - Delete application
+
+#### Health Check
+
+- `GET /api/health` - API health status
+
+For detailed API documentation, see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
+
+## 🗄 Database Schema
+
+The application uses the following main models:
+
+- **User**: User accounts and authentication
+- **Resume**: Uploaded resume files and extracted content
+- **JobPost**: Job postings with extracted keywords
+- **Application**: Job application tracking
+- **Optimization**: Resume optimization history
+
+See `prisma/schema.prisma` for the complete schema definition.
+
+## 🔒 Security Features
+
+- **Authentication**: Supabase Auth with JWT tokens
+- **Authorization**: User-scoped data access
+- **File Validation**: Type and size validation for uploads
+- **Input Validation**: Zod schemas for all API inputs
+- **Error Handling**: Comprehensive error responses
+- **Rate Limiting**: Built-in protection against abuse
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Connect your repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Other Platforms
+
+The application can be deployed to any platform that supports Next.js:
+
+- Netlify
+- Railway
+- DigitalOcean App Platform
+- AWS Amplify
+
+### Production Checklist
+
+- [ ] Set up production database
+- [ ] Configure environment variables
+- [ ] Run database migrations: `npx prisma migrate deploy`
+- [ ] Set up Supabase storage bucket
+- [ ] Configure domain and SSL
+- [ ] Set up monitoring and logging
+
+## 🧪 Testing
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests in watch mode
+pnpm test:watch
+
+# Run type checking
+pnpm type-check
+```
+
+## 📈 Performance Considerations
+
+- **File Processing**: Asynchronous text extraction with fallbacks
+- **Database**: Optimized queries with proper indexing
+- **Caching**: API responses cached where appropriate
+- **Error Handling**: Graceful degradation for external services
+- **Rate Limiting**: Prevents API abuse
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit changes: `git commit -am 'Add new feature'`
+4. Push to branch: `git push origin feature/new-feature`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue in the GitHub repository
+- Check the [API Documentation](./API_DOCUMENTATION.md)
+- Review the [troubleshooting guide](#troubleshooting)
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Issues**
+
+   - Verify DATABASE_URL is correct
+   - Ensure PostgreSQL is running
+   - Check network connectivity
+
+2. **Supabase Authentication Errors**
+
+   - Verify SUPABASE_URL and keys are correct
+   - Check Supabase project settings
+   - Ensure storage bucket exists
+
+3. **OpenAI API Errors**
+
+   - Verify OPENAI_API_KEY is valid
+   - Check API usage limits
+   - Review OpenAI service status
+
+4. **File Upload Issues**
+   - Check file size limits (10MB max)
+   - Verify supported file types (PDF, DOCX)
+   - Ensure Supabase storage is configured
+
+### Development Tips
+
+- Use `npx prisma studio` to inspect database
+- Check browser network tab for API errors
+- Review server logs for detailed error messages
+- Use `pnpm dev` for hot reloading during development

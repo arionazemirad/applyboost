@@ -18,19 +18,35 @@ import {
   Sparkles,
   CheckCircle,
   AlertCircle,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 
 // Define validation schema
-const signInSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+const signUpSchema = z
+  .object({
+    email: z.string().email("Please enter a valid email address"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(100, "Password is too long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+    confirmPassword: z.string().min(8, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -46,36 +62,13 @@ export default function SignInPage() {
       }
     };
     checkUser();
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("🔄 Auth state change:", {
-        event,
-        hasSession: !!session,
-        sessionId: session?.access_token ? "exists" : "none",
-        userId: session?.user?.id || "none",
-      });
-
-      if (event === "SIGNED_IN" && session) {
-        console.log("🚀 User signed in successfully, redirecting to dashboard");
-        router.push("/dashboard");
-      } else if (event === "SIGNED_OUT") {
-        console.log("👋 User signed out");
-      } else {
-        console.log("ℹ️ Other auth event:", event);
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, [router]);
 
   const validateForm = () => {
     setErrors({});
 
     try {
-      signInSchema.parse({ email, password });
+      signUpSchema.parse({ email, password, confirmPassword });
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -98,78 +91,57 @@ export default function SignInPage() {
     }
 
     setLoading(true);
-    console.log("🔐 Starting sign-in process...");
 
     try {
-      console.log("📧 Attempting to sign in with:", email);
-
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
-      });
-
-      console.log("📊 Sign-in response:", {
-        user: data.user ? "exists" : "null",
-        session: data.session ? "exists" : "null",
-        error: error ? error.message : "none",
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
       });
 
       if (error) {
-        console.error("❌ Sign in error:", error);
         setMessage(error.message);
-        setLoading(false);
-        return;
-      }
-
-      if (data.user && data.session) {
-        console.log("✅ Sign in successful, user ID:", data.user.id);
-        console.log("🎫 Session token exists:", !!data.session.access_token);
-        setMessage("Sign in successful! Redirecting...");
-
-        // Give the SSR client time to set cookies properly
-        console.log("⏳ Waiting for SSR cookies to be set...");
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        console.log("🚀 Redirecting to dashboard");
-        window.location.href = "/dashboard";
-
-        setLoading(false);
       } else {
-        console.warn("⚠️ Sign in response missing user or session");
-        setMessage("Sign in failed. Please try again.");
-        setLoading(false);
+        setMessage(
+          "Success! Please check your email to verify your account before signing in."
+        );
       }
     } catch (err) {
-      console.error("💥 Unexpected error:", err);
       setMessage("An unexpected error occurred");
+      console.error(err);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleOAuth = async () => {
     setLoading(true);
-    setMessage("");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
 
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        },
-      });
-
-      if (error) {
-        console.error("OAuth error:", error);
-        setMessage(error.message);
-        setLoading(false);
-      }
-      // Note: For OAuth, the redirect happens automatically, so we don't need to handle success here
-    } catch (err) {
-      console.error("Unexpected OAuth error:", err);
-      setMessage("An unexpected error occurred with Google sign-in");
+    if (error) {
+      setMessage(error.message);
       setLoading(false);
     }
   };
+
+  const getPasswordStrength = (password: string) => {
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[^a-zA-Z\d]/.test(password)) strength++;
+    return strength;
+  };
+
+  const passwordStrength = getPasswordStrength(password);
 
   return (
     <div className='min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-950 dark:to-purple-950/20 flex items-center justify-center p-4'>
@@ -193,18 +165,18 @@ export default function SignInPage() {
 
           <Badge className='mb-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white border-0 px-4 py-2'>
             <Sparkles className='w-4 h-4 mr-2' />
-            Welcome Back
+            Join the Community
           </Badge>
 
           <h1 className='text-3xl font-bold text-gray-900 dark:text-white mb-2'>
-            Sign in to your account
+            Create your account
           </h1>
           <p className='text-gray-600 dark:text-gray-300'>
-            Continue your journey to landing your dream job
+            Start optimizing your resume and land your dream job
           </p>
         </div>
 
-        {/* Sign In Card */}
+        {/* Sign Up Card */}
         <Card className='bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-0 shadow-2xl'>
           <CardContent className='p-8'>
             <form
@@ -279,6 +251,34 @@ export default function SignInPage() {
                     )}
                   </button>
                 </div>
+
+                {/* Password Strength Indicator */}
+                {password && (
+                  <div className='space-y-2'>
+                    <div className='flex gap-1'>
+                      {[1, 2, 3, 4, 5].map((level) => (
+                        <div
+                          key={level}
+                          className={`h-1 flex-1 rounded-full transition-colors ${
+                            passwordStrength >= level
+                              ? passwordStrength <= 2
+                                ? "bg-red-500"
+                                : passwordStrength <= 3
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
+                              : "bg-gray-200 dark:bg-gray-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className='text-xs text-gray-500 dark:text-gray-400'>
+                      {passwordStrength <= 2 && "Weak password"}
+                      {passwordStrength === 3 && "Medium password"}
+                      {passwordStrength >= 4 && "Strong password"}
+                    </p>
+                  </div>
+                )}
+
                 {errors.password && (
                   <div className='flex items-center gap-2 text-red-600 text-sm'>
                     <AlertCircle className='w-4 h-4' />
@@ -287,17 +287,68 @@ export default function SignInPage() {
                 )}
               </div>
 
-              {/* Forgot Password */}
-              <div className='flex justify-end'>
-                <Link
-                  href='/forgot-password'
-                  className='text-sm text-blue-600 hover:text-blue-700 font-medium'
+              {/* Confirm Password Field */}
+              <div className='space-y-2'>
+                <label
+                  htmlFor='confirmPassword'
+                  className='text-sm font-medium text-gray-700 dark:text-gray-300'
                 >
-                  Forgot your password?
-                </Link>
+                  Confirm Password
+                </label>
+                <div className='relative'>
+                  <Lock className='absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400' />
+                  <Input
+                    id='confirmPassword'
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder='••••••••'
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`pl-10 pr-10 h-12 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-blue-500 ${
+                      errors.confirmPassword
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                        : ""
+                    }`}
+                  />
+                  <button
+                    type='button'
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className='w-5 h-5' />
+                    ) : (
+                      <Eye className='w-5 h-5' />
+                    )}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <div className='flex items-center gap-2 text-red-600 text-sm'>
+                    <AlertCircle className='w-4 h-4' />
+                    {errors.confirmPassword}
+                  </div>
+                )}
               </div>
 
-              {/* Sign In Button */}
+              {/* Terms and Privacy */}
+              <div className='text-sm text-gray-600 dark:text-gray-300'>
+                By creating an account, you agree to our{" "}
+                <Link
+                  href='/terms'
+                  className='text-blue-600 hover:text-blue-700 font-medium'
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href='/privacy'
+                  className='text-blue-600 hover:text-blue-700 font-medium'
+                >
+                  Privacy Policy
+                </Link>
+                .
+              </div>
+
+              {/* Sign Up Button */}
               <Button
                 type='submit'
                 disabled={loading}
@@ -306,11 +357,12 @@ export default function SignInPage() {
                 {loading ? (
                   <div className='flex items-center gap-2'>
                     <div className='w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin' />
-                    Signing in...
+                    Creating account...
                   </div>
                 ) : (
                   <div className='flex items-center gap-2'>
-                    Sign In
+                    <User className='w-5 h-5' />
+                    Create Account
                     <ArrowRight className='w-5 h-5' />
                   </div>
                 )}
@@ -349,7 +401,7 @@ export default function SignInPage() {
               </div>
             </div>
 
-            {/* Google Sign In */}
+            {/* Google Sign Up */}
             <Button
               type='button'
               variant='outline'
@@ -380,15 +432,15 @@ export default function SignInPage() {
           </CardContent>
         </Card>
 
-        {/* Sign Up Link */}
+        {/* Sign In Link */}
         <div className='text-center mt-8'>
           <p className='text-gray-600 dark:text-gray-300'>
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <Link
-              href='/signup'
+              href='/signin'
               className='text-blue-600 hover:text-blue-700 font-semibold hover:underline'
             >
-              Sign up for free
+              Sign in
             </Link>
           </p>
         </div>

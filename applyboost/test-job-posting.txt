@@ -1,0 +1,47 @@
+Senior Frontend Developer - TechCorp Inc.
+
+We are seeking a highly skilled Senior Frontend Developer to join our dynamic team. The ideal candidate will have 5+ years of experience in modern web development and a passion for creating exceptional user experiences.
+
+Key Responsibilities:
+- Develop and maintain responsive web applications using React.js and TypeScript
+- Collaborate with cross-functional teams using Agile methodology
+- Implement modern UI/UX designs with attention to detail
+- Optimize application performance and ensure cross-browser compatibility
+- Write clean, maintainable code following best practices
+- Participate in code reviews and mentor junior developers
+- Work with RESTful APIs and GraphQL
+- Implement automated testing using Jest and Cypress
+
+Required Skills:
+- 5+ years of experience in frontend development
+- Expert knowledge of JavaScript, HTML5, and CSS3
+- Proficiency in React.js, TypeScript, and modern JavaScript frameworks
+- Experience with state management libraries (Redux, Zustand)
+- Knowledge of build tools (Webpack, Vite) and package managers (npm, yarn)
+- Familiarity with version control systems (Git)
+- Understanding of responsive design principles and mobile-first development
+- Experience with CSS preprocessors (Sass, Less) or CSS-in-JS solutions
+- Knowledge of web performance optimization techniques
+- Experience with testing frameworks and methodologies
+
+Preferred Qualifications:
+- Bachelor's degree in Computer Science or related field
+- Experience with Node.js and backend development
+- Knowledge of cloud platforms (AWS, Azure, Google Cloud)
+- Familiarity with containerization (Docker, Kubernetes)
+- Experience with CI/CD pipelines
+- Understanding of accessibility standards (WCAG)
+- Experience with design systems and component libraries
+- Knowledge of SEO best practices
+
+What We Offer:
+- Competitive salary and benefits package
+- Remote work flexibility
+- Professional development opportunities
+- Health, dental, and vision insurance
+- 401(k) with company matching
+- Flexible PTO policy
+- Modern tech stack and tools
+- Collaborative and inclusive work environment
+
+Join our team and help us build the next generation of web applications that will impact millions of users worldwide! 
