@@ -40,77 +40,84 @@ export function ResumeUpload({
   );
   const [error, setError] = useState<string | null>(null);
 
-  const uploadResume = async (file: File) => {
-    setIsUploading(true);
-    setError(null);
-    setUploadProgress(0);
+  const uploadResume = useCallback(
+    async (file: File) => {
+      setIsUploading(true);
+      setError(null);
+      setUploadProgress(0);
 
-    try {
-      // Get the current user session
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        // Get the current user session
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
-      if (!session) {
-        throw new Error("Please sign in to upload your resume");
-      }
+        if (!session) {
+          throw new Error("Please sign in to upload your resume");
+        }
 
-      // Create form data
-      const formData = new FormData();
-      formData.append("file", file);
+        // Create form data
+        const formData = new FormData();
+        formData.append("file", file);
 
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
+        // Simulate progress
+        const progressInterval = setInterval(() => {
+          setUploadProgress((prev) => {
+            if (prev >= 90) {
+              clearInterval(progressInterval);
+              return 90;
+            }
+            return prev + 10;
+          });
+        }, 200);
+
+        // Upload to API
+        const response = await fetch("/api/resume/upload", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: formData,
         });
-      }, 200);
 
-      // Upload to API
-      const response = await fetch("/api/resume/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: formData,
-      });
+        clearInterval(progressInterval);
+        setUploadProgress(100);
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Upload failed");
+        }
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Upload failed");
+        const result = await response.json();
+
+        if (result.success) {
+          setUploadedResume(result.data);
+          onUploadSuccess?.(result.data);
+        } else {
+          throw new Error(result.error || "Upload failed");
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Upload failed";
+        setError(errorMessage);
+        onUploadError?.(errorMessage);
+      } finally {
+        setIsUploading(false);
       }
+    },
+    [onUploadSuccess, onUploadError]
+  );
 
-      const result = await response.json();
-
-      if (result.success) {
-        setUploadedResume(result.data);
-        onUploadSuccess?.(result.data);
-      } else {
-        throw new Error(result.error || "Upload failed");
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        setUploadedFile(file);
+        uploadResume(file);
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Upload failed";
-      setError(errorMessage);
-      onUploadError?.(errorMessage);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      setUploadedFile(file);
-      uploadResume(file);
-    }
-  }, []);
+    },
+    [uploadResume]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

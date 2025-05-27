@@ -4,10 +4,10 @@ import { ZodError } from "zod";
 export interface ApiError {
   message: string;
   code?: string;
-  details?: any;
+  details?: unknown;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: ApiError;
@@ -38,7 +38,7 @@ export function createErrorResponse(
   message: string,
   status: number = 400,
   code?: string,
-  details?: any
+  details?: unknown
 ): NextResponse<ApiResponse> {
   return NextResponse.json(
     {
@@ -97,7 +97,7 @@ export async function parseRequestBody<T>(request: Request): Promise<T> {
   try {
     const body = await request.json();
     return body as T;
-  } catch (error) {
+  } catch {
     throw new Error("Invalid JSON in request body");
   }
 }

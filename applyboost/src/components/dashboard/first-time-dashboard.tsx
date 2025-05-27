@@ -167,7 +167,7 @@ export function FirstTimeDashboard() {
           <span className='font-semibold'>Welcome to ApplyBoost.ai!</span>
         </div>
         <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>
-          Let's optimize your resume in 4 simple steps
+          Let&apos;s optimize your resume in 4 simple steps
         </h1>
         <p className='text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto'>
           Our AI will analyze your resume against job requirements and suggest

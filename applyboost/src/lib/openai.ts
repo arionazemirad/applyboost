@@ -47,7 +47,7 @@ Return only valid JSON, no additional text.
     try {
       const result = JSON.parse(content) as KeywordExtractionResult;
       return result;
-    } catch (parseError) {
+    } catch {
       // Fallback: extract keywords manually if JSON parsing fails
       return {
         keywords: extractBasicKeywords(jobContent),
@@ -120,7 +120,7 @@ Return only valid JSON, no additional text.
     try {
       const result = JSON.parse(content) as OptimizationResult;
       return result;
-    } catch (parseError) {
+    } catch {
       // Fallback optimization
       return createFallbackOptimization(resumeContent, jobKeywords);
     }

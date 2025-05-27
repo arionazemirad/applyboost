@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { optimizeResume, calculateMatchScore } from "@/lib/openai";
+import { optimizeResume } from "@/lib/openai";
 import {
   createSuccessResponse,
   handleApiError,
@@ -47,10 +47,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate initial match score
-    const initialScore = await calculateMatchScore(
-      resume.content,
-      jobPost.keywords
-    );
+    // const initialScore = await calculateMatchScore(
+    //   resume.content,
+    //   jobPost.keywords
+    // );
 
     // Optimize resume using OpenAI
     const optimizationResult = await optimizeResume(

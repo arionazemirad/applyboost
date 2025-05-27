@@ -28,8 +28,8 @@ export function CTASection() {
 
         {/* Subtext */}
         <p className='text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed'>
-          Join thousands of job seekers who've already boosted their interview
-          rates with AI-powered resume optimization. Your next career
+          Join thousands of job seekers who&apos;ve already boosted their
+          interview rates with AI-powered resume optimization. Your next career
           breakthrough is just one click away.
         </p>
 

@@ -4,18 +4,6 @@ import { ArrowRight, Sparkles, CheckCircle } from "lucide-react";
 
 export function AIPreviewSection() {
   const beforeKeywords = ["JavaScript", "HTML", "CSS", "React"];
-  const afterKeywords = [
-    "JavaScript",
-    "HTML",
-    "CSS",
-    "React",
-    "TypeScript",
-    "Node.js",
-    "AWS",
-    "Docker",
-    "Kubernetes",
-    "CI/CD",
-  ];
   const addedKeywords = [
     "TypeScript",
     "Node.js",

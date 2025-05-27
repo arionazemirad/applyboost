@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, FileText, Zap, X } from "lucide-react";
+import { Upload, Zap, X } from "lucide-react";
 import {
   Card,
   CardContent,

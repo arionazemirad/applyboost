@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Quote } from "lucide-react";
-import Image from "next/image";
 
 export function TestimonialsSection() {
   const testimonials = [
@@ -55,8 +54,8 @@ export function TestimonialsSection() {
             Trusted by Job Seekers Worldwide
           </h2>
           <p className='text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto'>
-            Join thousands of professionals who've already boosted their careers
-            with ApplyBoost.ai
+            Join thousands of professionals who&apos;ve already boosted their
+            careers with ApplyBoost.ai
           </p>
         </div>
 
@@ -83,7 +82,7 @@ export function TestimonialsSection() {
 
                 {/* Content */}
                 <p className='text-gray-600 dark:text-gray-300 mb-6 leading-relaxed'>
-                  "{testimonial.content}"
+                  &ldquo;{testimonial.content}&rdquo;
                 </p>
 
                 {/* Author */}

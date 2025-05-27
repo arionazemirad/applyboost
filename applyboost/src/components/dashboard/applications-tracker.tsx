@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Plus,
-  Filter,
-  Search,
-  MoreHorizontal,
-  Calendar,
-  Building,
-} from "lucide-react";
+import { Plus, Search, MoreHorizontal, Calendar, Building } from "lucide-react";
 import {
   Card,
   CardContent,

@@ -46,8 +46,8 @@ export function ValuePropositionSection() {
             Why Choose ApplyBoost.ai?
           </h2>
           <p className='text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto'>
-            Join thousands of job seekers who've already boosted their interview
-            rates with our AI-powered resume optimization platform.
+            Join thousands of job seekers who&apos;ve already boosted their
+            interview rates with our AI-powered resume optimization platform.
           </p>
         </div>
 

@@ -7,19 +7,15 @@ import {
   Target,
   History,
   Settings,
-  User,
   Moon,
   Sun,
   Bell,
-  Search,
   Menu,
-  X,
   Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Dialog,

@@ -104,7 +104,14 @@ export async function GET(request: NextRequest) {
     const { status, search } = params;
 
     // Build where clause
-    const where: any = { userId: user.id };
+    const where: {
+      userId: string;
+      status?: string;
+      OR?: Array<{
+        jobTitle?: { contains: string; mode: "insensitive" };
+        company?: { contains: string; mode: "insensitive" };
+      }>;
+    } = { userId: user.id };
 
     if (status && status !== "all") {
       where.status = status;

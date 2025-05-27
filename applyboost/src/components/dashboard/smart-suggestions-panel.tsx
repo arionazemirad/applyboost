@@ -103,10 +103,6 @@ export function SmartSuggestionsPanel() {
     setAppliedSuggestions((prev) => [...prev, suggestion]);
   };
 
-  const removeSuggestion = (suggestion: string) => {
-    setAppliedSuggestions((prev) => prev.filter((s) => s !== suggestion));
-  };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case "high":
