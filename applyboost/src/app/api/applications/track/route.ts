@@ -156,12 +156,12 @@ export async function GET(request: NextRequest) {
       _count: { status: true },
     });
 
-    const summary = statusCounts.reduce(
-      (acc, item) => {
+    const summary = statusCounts.reduce<Record<string, number>>(
+      (acc: Record<string, number>, item: { status: string; _count: { status: number } }) => {
         acc[item.status] = item._count.status;
         return acc;
       },
-      {} as Record<string, number>
+      {}
     );
 
     const pagination = calculatePagination(page, limit, total);
