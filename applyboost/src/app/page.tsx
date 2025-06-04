@@ -4,11 +4,14 @@ import Link from "next/link";
 import { HeroSection } from "@/components/landing/hero-section";
 import { HowItWorksSection } from "@/components/landing/how-it-works-section";
 import { ValuePropositionSection } from "@/components/landing/value-proposition-section";
-import { AIPreviewSection } from "@/components/landing/ai-preview-section";
-import { TestimonialsSection } from "@/components/landing/testimonials-section";
-import { FAQSection } from "@/components/landing/faq-section";
-import { CTASection } from "@/components/landing/cta-section";
-import { Footer } from "@/components/landing/footer";
+import dynamic from "next/dynamic";
+
+const CTASection = dynamic(() => import("@/components/landing/cta-section"), { ssr: false });
+const Footer = dynamic(() => import("@/components/landing/footer"), { ssr: false });
+
+const AIPreviewSection = dynamic(() => import("@/components/landing/ai-preview-section"), { ssr: false });
+const TestimonialsSection = dynamic(() => import("@/components/landing/testimonials-section"), { ssr: false });
+const FAQSection = dynamic(() => import("@/components/landing/faq-section"), { ssr: false });
 
 export default function LandingPage() {
   return (
