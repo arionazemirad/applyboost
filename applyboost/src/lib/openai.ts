@@ -203,6 +203,9 @@ function calculateBasicMatchScore(
   resumeContent: string,
   jobKeywords: string[]
 ): number {
+  if (jobKeywords.length === 0) {
+    return 0;
+  }
   const resumeLower = resumeContent.toLowerCase();
   const matchedKeywords = jobKeywords.filter((keyword) =>
     resumeLower.includes(keyword.toLowerCase())
