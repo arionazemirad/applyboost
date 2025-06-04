@@ -133,12 +133,12 @@ export async function GET(request: NextRequest) {
     const averageImprovement =
       totalOptimizations > 0
         ? optimizations.reduce(
-            (sum: number, opt) => sum + (opt.scoreAfter - opt.scoreBefore),
+            (sum: number, opt: { scoreAfter: number; scoreBefore: number }) => sum + (opt.scoreAfter - opt.scoreBefore),
             0
           ) / totalOptimizations
         : 0;
     const totalKeywordsAdded = optimizations.reduce(
-      (sum: number, opt) => sum + opt.addedKeywords.length,
+      (sum: number, opt: { addedKeywords: string[] }) => sum + opt.addedKeywords.length,
       0
     );
 

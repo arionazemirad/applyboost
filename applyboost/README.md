@@ -74,7 +74,13 @@ pnpm install
 
 ### 2. Environment Variables
 
-Create a `.env.local` file with the following variables:
+Copy `.env.example` to `.env.local` and fill in your keys:
+
+```bash
+cp .env.example .env.local
+```
+
+Then set the following values:
 
 ```bash
 # Database
@@ -189,8 +195,9 @@ See `prisma/schema.prisma` for the complete schema definition.
 ### Vercel (Recommended)
 
 1. Connect your repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
+2. The repo includes `vercel.json` which sets the root directory to `applyboost` and uses pnpm for builds.
+3. Add the environment variables from `.env.example` in the Vercel dashboard.
+4. Deploy automatically on push to the main branch
 
 ### Other Platforms
 
